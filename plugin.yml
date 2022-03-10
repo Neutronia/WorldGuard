@@ -1,0 +1,11 @@
+name: WorldGuard
+author: alvin0319
+main: alvin0319\WorldGuard\WorldGuard
+version: 1.0.0
+api: 4.0.0
+
+permissions:
+  worldguard.bypass:
+    default: op
+  worldguard.command:
+    default: op
