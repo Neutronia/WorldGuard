@@ -11,7 +11,6 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\player\Player;
 use function count;
-use function in_array;
 
 final class WorldGuardCommand extends Command{
 

@@ -19,6 +19,7 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
+use RuntimeException;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
@@ -46,7 +47,7 @@ final class WorldGuard extends PluginBase implements Listener{
 	public function onEnable() : void{
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
 		if(!is_dir($this->getDataFolder() . "worlds/") && !mkdir($concurrentDirectory = $this->getDataFolder() . "worlds/", 0777, true) && !is_dir($concurrentDirectory)){
-			throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+			throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 		}
 
 		@mkdir($this->getDataFolder() . "worlds/islands/", 0777, true);
