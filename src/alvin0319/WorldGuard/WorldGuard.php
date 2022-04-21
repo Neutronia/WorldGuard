@@ -11,6 +11,7 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerDeathEvent;
+use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\world\WorldLoadEvent;
 use pocketmine\event\world\WorldUnloadEvent;
@@ -99,7 +100,6 @@ final class WorldGuard extends PluginBase implements Listener{
 	/**
 	 * @param PlayerInteractEvent $event
 	 *
-	 * @ignoreCancelled true
 	 * @priority LOWEST
 	 */
 	public function onPlayerInteract(PlayerInteractEvent $event) : void{
@@ -119,7 +119,6 @@ final class WorldGuard extends PluginBase implements Listener{
 	/**
 	 * @param BlockPlaceEvent $event
 	 *
-	 * @ignoreCancelled true
 	 * @priority LOWEST
 	 */
 	public function onBlockPlace(BlockPlaceEvent $event) : void{
@@ -139,7 +138,6 @@ final class WorldGuard extends PluginBase implements Listener{
 	/**
 	 * @param BlockBreakEvent $event
 	 *
-	 * @ignoreCancelled true
 	 * @priority LOWEST
 	 */
 	public function onBlockBreak(BlockBreakEvent $event) : void{
@@ -159,13 +157,19 @@ final class WorldGuard extends PluginBase implements Listener{
 	/**
 	 * @param EntityDamageEvent $event
 	 *
-	 * @ignoreCancelled true
 	 * @priority LOWEST
 	 */
 	public function onEntityDamage(EntityDamageEvent $event) : void{
 		$entity = $event->getEntity();
 		if(!$entity instanceof Player){
 			return;
+		}
+		$worldData = $this->getWorldData($entity->getWorld());
+		if($event->getCause() === EntityDamageEvent::CAUSE_FALL){
+			if($worldData->get(WorldData::FALL_DAMAGE)){
+				return;
+			}
+			$event->cancel();
 		}
 		if(!$event instanceof EntityDamageByEntityEvent){
 			return;
@@ -174,11 +178,44 @@ final class WorldGuard extends PluginBase implements Listener{
 		if(!$player instanceof Player){
 			return;
 		}
-		$worldData = $this->getWorldData($player->getWorld());
 
 		if($worldData->get(WorldData::PVP)){
 			return;
 		}
 		$event->cancel();
+	}
+
+	/**
+	 * @param PlayerExhaustEvent $event
+	 *
+	 * @priority LOWEST
+	 */
+	public function onPlayerHunger(PlayerExhaustEvent $event) : void{
+		$player = $event->getPlayer();
+		if(!$player instanceof Player){
+			return;
+		}
+		$worldData = $this->getWorldData($player->getWorld());
+		if(!$worldData->get(WorldData::HUNGER)){
+			return;
+		}
+		if($player->hasPermission("worldguard.bypass")){
+			return;
+		}
+		$event->cancel();
+	}
+
+	/**
+	 * @param PlayerDeathEvent $event
+	 *
+	 * @priority LOWEST
+	 */
+	public function onPlayerDeath(PlayerDeathEvent $event) : void{
+		$player = $event->getEntity();
+		if(!$player instanceof Player){
+			return;
+		}
+		$worldData = $this->getWorldData($player->getWorld());
+		$event->setKeepInventory($worldData->get(WorldData::KEEP_INVENTORY));
 	}
 }

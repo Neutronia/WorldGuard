@@ -13,13 +13,17 @@ final class WorldData implements JsonSerializable{
 	public const PLACE_BLOCK = "place_block";
 	public const PVP = "pvp";
 	public const KEEP_INVENTORY = "keep_inventory";
+	public const HUNGER = "hunger";
+	public const FALL_DAMAGE = "fall_damage";
 
 	public const DEFAULT_SETTINGS = [
 		self::INTERACT => true,
 		self::BREAK_BLOCK => true,
 		self::PLACE_BLOCK => true,
 		self::PVP => false,
-		self::KEEP_INVENTORY => true
+		self::KEEP_INVENTORY => true,
+		self::HUNGER => true,
+		self::FALL_DAMAGE => true
 	];
 
 	protected array $settings;
