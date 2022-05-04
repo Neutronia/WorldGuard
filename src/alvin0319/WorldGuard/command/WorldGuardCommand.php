@@ -46,6 +46,12 @@ final class WorldGuardCommand extends Command{
 			case "keepinventory":
 				$name = WorldData::KEEP_INVENTORY;
 				break;
+			case "hunger":
+				$name = WorldData::HUNGER;
+				break;
+			case "fall":
+				$name = WorldData::FALL_DAMAGE;
+				break;
 			default:
 				$sender->sendMessage(WorldGuard::$prefix . "Unknown setting.");
 				return false;
