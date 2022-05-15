@@ -165,22 +165,35 @@ final class WorldGuard extends PluginBase implements Listener{
 			return;
 		}
 		$worldData = $this->getWorldData($entity->getWorld());
-		if($event->getCause() === EntityDamageEvent::CAUSE_FALL){
+		$cause = $event->getCause();
+		if($cause === EntityDamageEvent::CAUSE_FALL){
 			if($worldData->get(WorldData::FALL_DAMAGE)){
 				return;
 			}
-			$event->cancel();
-		}
-		if(!$event instanceof EntityDamageByEntityEvent){
-			return;
-		}
-		$player = $event->getDamager();
-		if(!$player instanceof Player){
-			return;
-		}
+		}elseif($cause === EntityDamageEvent::CAUSE_DROWNING){
+			if($worldData->get(WorldData::DROWNING_DAMAGE)){
+				return;
+			}
+		}elseif($cause === EntityDamageEvent::CAUSE_LAVA){
+			if($worldData->get(WorldData::LAVA_DAMAGE)){
+				return;
+			}
+		}elseif($cause === EntityDamageEvent::CAUSE_SUFFOCATION){
+			if($worldData->get(WorldData::SUFFOCATION_DAMAGE)){
+				return;
+			}
+		}else{
+			if(!$event instanceof EntityDamageByEntityEvent){
+				return;
+			}
+			$player = $event->getDamager();
+			if(!$player instanceof Player){
+				return;
+			}
 
-		if($worldData->get(WorldData::PVP)){
-			return;
+			if($worldData->get(WorldData::PVP)){
+				return;
+			}
 		}
 		$event->cancel();
 	}

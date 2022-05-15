@@ -52,8 +52,18 @@ final class WorldGuardCommand extends Command{
 			case "fall":
 				$name = WorldData::FALL_DAMAGE;
 				break;
+			case "lava":
+				$name = WorldData::LAVA_DAMAGE;
+				break;
+			case "water":
+				$name = WorldData::DROWNING_DAMAGE;
+				break;
+			case "suffocation":
+				$name = WorldData::SUFFOCATION_DAMAGE;
+				break;
 			default:
 				$sender->sendMessage(WorldGuard::$prefix . "Unknown setting.");
+				$sender->sendMessage(WorldGuard::$prefix . "Available setting: pvp, interact, place, break, keepinventory, hunger, fall, lava, water, suffocation");
 				return false;
 		}
 		$curValue = $worldData->get($name);

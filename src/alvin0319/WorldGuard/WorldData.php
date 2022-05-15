@@ -15,6 +15,9 @@ final class WorldData implements JsonSerializable{
 	public const KEEP_INVENTORY = "keep_inventory";
 	public const HUNGER = "hunger";
 	public const FALL_DAMAGE = "fall_damage";
+	public const DROWNING_DAMAGE = "drowning_damage";
+	public const LAVA_DAMAGE = "lava_damage";
+	public const SUFFOCATION_DAMAGE = "suffocation_damage";
 
 	public const DEFAULT_SETTINGS = [
 		self::INTERACT => true,
@@ -23,7 +26,10 @@ final class WorldData implements JsonSerializable{
 		self::PVP => false,
 		self::KEEP_INVENTORY => true,
 		self::HUNGER => true,
-		self::FALL_DAMAGE => true
+		self::FALL_DAMAGE => true,
+		self::DROWNING_DAMAGE => true,
+		self::LAVA_DAMAGE => true,
+		self::SUFFOCATION_DAMAGE => true
 	];
 
 	protected array $settings;
