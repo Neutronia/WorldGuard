@@ -10,6 +10,8 @@ use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerBucketEmptyEvent;
+use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerInteractEvent;
@@ -141,6 +143,44 @@ final class WorldGuard extends PluginBase implements Listener{
 	 * @priority LOWEST
 	 */
 	public function onBlockBreak(BlockBreakEvent $event) : void{
+		$player = $event->getPlayer();
+
+		$worldData = $this->getWorldData($player->getWorld());
+
+		if($worldData->get(WorldData::BREAK_BLOCK)){
+			return;
+		}
+		if($player->hasPermission("worldguard.bypass")){
+			return;
+		}
+		$event->cancel();
+	}
+
+	/**
+	 * @param PlayerBucketEmptyEvent $event
+	 *
+	 * @priority LOWEST
+	 */
+	public function onPlayerBucketEmpty(PlayerBucketEmptyEvent $event) : void{
+		$player = $event->getPlayer();
+
+		$worldData = $this->getWorldData($player->getWorld());
+
+		if($worldData->get(WorldData::PLACE_BLOCK)){
+			return;
+		}
+		if($player->hasPermission("worldguard.bypass")){
+			return;
+		}
+		$event->cancel();
+	}
+
+	/**
+	 * @param PlayerBucketFillEvent $event
+	 *
+	 * @priority LOWEST
+	 */
+	public function onPlayerBucketFill(PlayerBucketFillEvent $event) : void{
 		$player = $event->getPlayer();
 
 		$worldData = $this->getWorldData($player->getWorld());
