@@ -64,51 +64,54 @@ final class WorldGuard extends PluginBase implements Listener{
 
 		$this->getServer()->getCommandMap()->register("worldguard", new WorldGuardCommand());
 
-		SimplePacketHandler::createInterceptor($this)
-			->interceptIncoming(function(PlayerAuthInputPacket $packet, NetworkSession $session) : bool{
-				$player = $session->getPlayer();
-				if($player === null){
-					return true;
-				}
-				$blockActions = $packet->getBlockActions();
-				if($blockActions !== null){
-					foreach($blockActions as $action){
-						if($action instanceof PlayerBlockActionWithBlockInfo){
-							$pos = $action->getBlockPosition();
-							$block = $player->getWorld()->getBlockAt($pos->getX(), $pos->getY(), $pos->getZ());
-							if($block instanceof ItemFrame){
-								$item = $block->getFramedItem();
-								if($item instanceof FilledMap){
-									$data = $this->getWorldData($player->getWorld());
-									$canInteract = ($data->get(WorldData::INTERACT) && $data->get(WorldData::PLACE_BLOCK) && $data->get(WorldData::BREAK_BLOCK));
-									if(!$canInteract){
-										return false;
+		if($this->getServer()->getPluginManager()->getPlugin("MapImageEngine") !== null){
+			SimplePacketHandler::createInterceptor($this)
+				->interceptIncoming(function(PlayerAuthInputPacket $packet, NetworkSession $session) : bool{
+					$player = $session->getPlayer();
+					if($player === null){
+						return true;
+					}
+					$blockActions = $packet->getBlockActions();
+					if($blockActions !== null){
+						foreach($blockActions as $action){
+							if($action instanceof PlayerBlockActionWithBlockInfo){
+								$pos = $action->getBlockPosition();
+								$block = $player->getWorld()->getBlockAt($pos->getX(), $pos->getY(), $pos->getZ());
+								if($block instanceof ItemFrame){
+									$item = $block->getFramedItem();
+									if($item instanceof FilledMap){
+										$data = $this->getWorldData($player->getWorld());
+										$canInteract = ($data->get(WorldData::INTERACT) && $data->get(WorldData::PLACE_BLOCK) && $data->get(WorldData::BREAK_BLOCK));
+										if(!$canInteract){
+											return false;
+										}
 									}
 								}
 							}
 						}
 					}
-				}
-				return true;
-			})
-			->interceptIncoming(function(ItemFrameDropItemPacket $packet, NetworkSession $session) : bool{
-				$player = $session->getPlayer();
-				if($player === null){
 					return true;
-				}
-				$block = $player->getWorld()->getBlockAt($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ());
-				if($block instanceof ItemFrame){
-					$item = $block->getFramedItem();
-					if($item instanceof FilledMap){
-						$data = $this->getWorldData($player->getWorld());
-						$canInteract = ($data->get(WorldData::INTERACT) && $data->get(WorldData::PLACE_BLOCK) && $data->get(WorldData::BREAK_BLOCK));
-						if(!$canInteract){
-							return false;
+				})
+				->interceptIncoming(function(ItemFrameDropItemPacket $packet, NetworkSession $session) : bool{
+					$player = $session->getPlayer();
+					if($player === null){
+						return true;
+					}
+					$block = $player->getWorld()->getBlockAt($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ());
+					if($block instanceof ItemFrame){
+						$item = $block->getFramedItem();
+						if($item instanceof FilledMap){
+							$data = $this->getWorldData($player->getWorld());
+							$canInteract = ($data->get(WorldData::INTERACT) && $data->get(WorldData::PLACE_BLOCK) && $data->get(WorldData::BREAK_BLOCK));
+							if(!$canInteract){
+								return false;
+							}
 						}
 					}
-				}
-				return true;
-			});
+					return true;
+				});
+		}
+
 	}
 
 	public function onDisable() : void{

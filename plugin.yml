@@ -4,6 +4,9 @@ main: alvin0319\WorldGuard\WorldGuard
 version: 1.0.0
 api: 4.0.0
 
+softdepend:
+  - MapImageEngine
+
 permissions:
   worldguard.bypass:
     default: op
