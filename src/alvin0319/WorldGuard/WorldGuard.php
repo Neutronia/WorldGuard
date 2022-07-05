@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace alvin0319\WorldGuard;
 
 use alvin0319\WorldGuard\command\WorldGuardCommand;
+use FaigerSYS\MapImageEngine\item\FilledMap;
+use muqsit\simplepackethandler\SimplePacketHandler;
+use pocketmine\block\ItemFrame;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -17,6 +20,10 @@ use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\world\WorldLoadEvent;
 use pocketmine\event\world\WorldUnloadEvent;
+use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
+use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
+use pocketmine\network\mcpe\protocol\types\PlayerBlockActionWithBlockInfo;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Filesystem;
@@ -56,6 +63,52 @@ final class WorldGuard extends PluginBase implements Listener{
 		@mkdir($this->getDataFolder() . "worlds/islands/", 0777, true);
 
 		$this->getServer()->getCommandMap()->register("worldguard", new WorldGuardCommand());
+
+		SimplePacketHandler::createInterceptor($this)
+			->interceptIncoming(function(PlayerAuthInputPacket $packet, NetworkSession $session) : bool{
+				$player = $session->getPlayer();
+				if($player === null){
+					return true;
+				}
+				$blockActions = $packet->getBlockActions();
+				if($blockActions !== null){
+					foreach($blockActions as $action){
+						if($action instanceof PlayerBlockActionWithBlockInfo){
+							$pos = $action->getBlockPosition();
+							$block = $player->getWorld()->getBlockAt($pos->getX(), $pos->getY(), $pos->getZ());
+							if($block instanceof ItemFrame){
+								$item = $block->getFramedItem();
+								if($item instanceof FilledMap){
+									$data = $this->getWorldData($player->getWorld());
+									$canInteract = ($data->get(WorldData::INTERACT) && $data->get(WorldData::PLACE_BLOCK) && $data->get(WorldData::BREAK_BLOCK));
+									if(!$canInteract){
+										return false;
+									}
+								}
+							}
+						}
+					}
+				}
+				return true;
+			})
+			->interceptIncoming(function(ItemFrameDropItemPacket $packet, NetworkSession $session) : bool{
+				$player = $session->getPlayer();
+				if($player === null){
+					return true;
+				}
+				$block = $player->getWorld()->getBlockAt($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ());
+				if($block instanceof ItemFrame){
+					$item = $block->getFramedItem();
+					if($item instanceof FilledMap){
+						$data = $this->getWorldData($player->getWorld());
+						$canInteract = ($data->get(WorldData::INTERACT) && $data->get(WorldData::PLACE_BLOCK) && $data->get(WorldData::BREAK_BLOCK));
+						if(!$canInteract){
+							return false;
+						}
+					}
+				}
+				return true;
+			});
 	}
 
 	public function onDisable() : void{
