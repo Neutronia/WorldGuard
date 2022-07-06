@@ -12,6 +12,7 @@ use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\EventPriority;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\event\player\PlayerBucketFillEvent;
@@ -65,7 +66,7 @@ final class WorldGuard extends PluginBase implements Listener{
 		$this->getServer()->getCommandMap()->register("worldguard", new WorldGuardCommand());
 
 		if($this->getServer()->getPluginManager()->getPlugin("MapImageEngine") !== null){
-			SimplePacketHandler::createInterceptor($this)
+			SimplePacketHandler::createInterceptor($this, EventPriority::LOWEST)
 				->interceptIncoming(function(PlayerAuthInputPacket $packet, NetworkSession $session) : bool{
 					$player = $session->getPlayer();
 					if($player === null){
