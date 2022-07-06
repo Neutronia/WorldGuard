@@ -82,7 +82,7 @@ final class WorldGuard extends PluginBase implements Listener{
 									if($item instanceof FilledMap){
 										$data = $this->getWorldData($player->getWorld());
 										$canInteract = ($data->get(WorldData::INTERACT) && $data->get(WorldData::PLACE_BLOCK) && $data->get(WorldData::BREAK_BLOCK));
-										if(!$canInteract){
+										if(!$player->hasPermission("worldguard.bypass") && !$canInteract){
 											return false;
 										}
 									}
@@ -103,7 +103,7 @@ final class WorldGuard extends PluginBase implements Listener{
 						if($item instanceof FilledMap){
 							$data = $this->getWorldData($player->getWorld());
 							$canInteract = ($data->get(WorldData::INTERACT) && $data->get(WorldData::PLACE_BLOCK) && $data->get(WorldData::BREAK_BLOCK));
-							if(!$canInteract){
+							if(!$player->hasPermission("worldguard.bypass") && !$canInteract){
 								return false;
 							}
 						}
