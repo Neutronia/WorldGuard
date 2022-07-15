@@ -47,10 +47,6 @@ final class WorldGuard extends PluginBase implements Listener{
 	/** @var WorldData[] */
 	protected array $worlds = [];
 
-	public static function getInstance() : WorldGuard{
-		return self::$instance;
-	}
-
 	public function onLoad() : void{
 		self::setInstance($this);
 	}
